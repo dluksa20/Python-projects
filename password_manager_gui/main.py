@@ -1,14 +1,11 @@
 import tkinter
-import customtkinter
 from tkinter import messagebox
-
-
-
-
-
-
 import string
 import random
+import pyperclip
+
+
+
 
 
 # ----------------------------- GENERATE PASSWORD -------------------------------- #
@@ -30,6 +27,7 @@ def generate_password():
     random.shuffle(password_list)
 
     password = ''.join(password_list)
+    pyperclip.copy(password)
     if len(password_input.get()) != 0 :
         password_input.delete(0, tkinter.END)
     password_input.insert(0, password)
@@ -52,7 +50,7 @@ def save_data():
     else:
         is_ok = messagebox.askokcancel(title=website, message=f'These are the details entered:' 
  
-                                                  f'\nEmail: {user} \nPassword: {pasword} \n Is it ok to save?')
+                                                  f'\nEmail: {user} \nPassword: {pasword} \nIs it ok to save?')
         if is_ok:
             with open('data.txt', 'a') as f:
                 f.write(f'{website} | {user} | {pasword} \n')
