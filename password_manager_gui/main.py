@@ -3,9 +3,25 @@ from tkinter import messagebox
 import string
 import random
 import pyperclip
+import json
 
 
 
+# ----------------------------- FIND PASSWORD -------------------------------- #
+def find_password():
+    search_keyword = url_input.get().capitalize()
+    try:
+        with open('data.json', 'r') as f:
+            data = json.load(f)
+            try:
+                match = data[search_keyword]
+                username = match['username']
+                pasword = match['password']
+                messagebox.showinfo(title='Match Found', message=f'Username: {username} \nPassword: {pasword}')
+            except KeyError:
+                messagebox.showerror(title='Error', message='No match found.')
+    except FileNotFoundError:
+        messagebox.showerror(title='Error', message='File not found.')
 
 
 # ----------------------------- GENERATE PASSWORD -------------------------------- #
@@ -42,6 +58,13 @@ def save_data():
     website = url_input.get()
     user = username_input.get()
     pasword = password_input.get()
+    
+    data_json = {
+        website:{
+            'username':user,
+            'password':pasword
+        }
+    }
 
 
     # show warning for empty fields
@@ -52,12 +75,22 @@ def save_data():
  
                                                   f'\nEmail: {user} \nPassword: {pasword} \nIs it ok to save?')
         if is_ok:
-            with open('data.txt', 'a') as f:
-                f.write(f'{website} | {user} | {pasword} \n')
-                # clear the entries
-                url_input.delete(0, tkinter.END)
-                password_input.delete(0, tkinter.END)
-                f.close()
+            # read/write data
+                try:
+                    with open('data.json', 'r') as f:
+                        data = json.load(f)
+                except (ValueError, FileNotFoundError):
+                    with open('data.json', 'w') as f:
+                        json.dump(data_json, f, indent=4)
+                else:
+                    data.update(data_json)
+                    with open('data.json', 'w') as f:
+                        json.dump(data, f, indent=4)
+
+                finally:
+                    # clear the entries
+                    url_input.delete(0, tkinter.END)
+                    password_input.delete(0, tkinter.END)
 
 
 
@@ -77,9 +110,13 @@ canvas.grid(row=0, column=0, columnspan=3)
 # ----------------------------- URL LABEL/INPUT -------------------------------- #
 url_label = tkinter.Label(text='Website: ')
 url_label.grid(row=1, column=0, sticky='E')
-url_input = tkinter.Entry(width=45)
-url_input.grid(row=1, column=1, columnspan=2)
+
+url_input = tkinter.Entry(width=25)
+url_input.grid(row=1, column=1)
 url_input.focus()
+
+search_button = tkinter.Button(text='Search', width=15, command=find_password)
+search_button.grid(row=1, column=2, padx=(5,0), pady=(3, 0))
 
 
 
