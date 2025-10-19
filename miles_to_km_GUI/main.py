@@ -17,8 +17,6 @@ def km_to_miles():
         output.config(text='Error enter a valid number!')
     
 
-
-
 # Label
 input_label = Label(window, text='Kilometers: ').grid(row=0, column=0)
 
